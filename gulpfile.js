@@ -16,7 +16,7 @@ gulp.task('build-clean', function() {
 });
 
 gulp.task('build-css', function() {
-  return gulp.src('css/*.css')
+  return gulp.src('src/css/*.css')
     .pipe(autoprefixer())
     .pipe(cleanCSS())
     .pipe(rename({
@@ -55,7 +55,7 @@ gulp.task('manifest-prod', function() {
 });
 
 gulp.task('build-html', function() {
-  return gulp.src('html/*.html')
+  return gulp.src('src/html/*.html')
     .pipe(htmlreplace(require('./dist/manifest.json')))
     .pipe(gulp.dest('example'));
 });
@@ -79,8 +79,8 @@ gulp.task('prod', function() {
     );
 });
 
-gulp.task('default', ['dev', 'watch']);
+gulp.task('default', ['dev']);
 
 gulp.task('watch', function() {
-  gulp.watch(['css/*.css', 'html/*.html'], ['dev'])
+  gulp.watch(['src/**/*.*'], ['dev'])
 });
