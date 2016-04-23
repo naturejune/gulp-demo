@@ -1,40 +1,86 @@
 var gulp = require('gulp');
-var cleanCSS = require('gulp-clean-css');
-var htmlreplace = require('gulp-html-replace');
-var hash = require('gulp-hash');
-var runSequence = require('run-sequence');
 var del = require('del');
+var jeditor = require("gulp-json-editor");
+var runSequence = require('run-sequence');
+
+var hash = require('gulp-hash');
+var rename = require('gulp-rename');
+var cleanCSS = require('gulp-clean-css');
+var autoprefixer = require('gulp-autoprefixer');
+var htmlreplace = require('gulp-html-replace');
+
+var config = require('./config/config.json');
 
 gulp.task('build-clean', function() {
   return del(['dist', 'example']);
 });
 
-gulp.task('build-html', function() {
-  var cssMap = gulp.src('./dist/assets.json');
-  var useMap = {};
-
-  for (var k in cssMap) {
-    useMap[k.split('.')[0]] = '../dist/' + cssMap[k];
-  }
-
-  console.log(useMap);
-
-  gulp.src('html/*.html')
-    .pipe(htmlreplace(useMap))
-    .pipe(gulp.dest('example/'));
-});
-
 gulp.task('build-css', function() {
-  gulp.src('css/*.css')
+  return gulp.src('css/*.css')
+    .pipe(autoprefixer())
     .pipe(cleanCSS())
-    .pipe(hash())
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(hash({
+      template: '<%= hash %>-<%= name %><%= ext %>'
+    }))
     .pipe(gulp.dest('dist'))
-    .pipe(hash.manifest('assets.json'))
+    .pipe(hash.manifest('manifest.json'))
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build', function() {
-  return runSequence('build-clean', 'build-css', 'build-html');
+gulp.task('manifest-dev', function() {
+  return gulp.src('dist/manifest.json')
+    .pipe(jeditor(function(json) {
+      var dev = {};
+      Object.keys(json).forEach(function(name) {
+        dev[name.split('.')[0]] = config.devPath + json[name];
+      })
+      return dev;
+    }))
+    .pipe(gulp.dest('dist'))
 });
 
-gulp.task('default', ['build']);
+gulp.task('manifest-prod', function() {
+  return gulp.src('dist/manifest.json')
+    .pipe(jeditor(function(json) {
+      var dev = {};
+      Object.keys(json).forEach(function(name) {
+        dev[name.split('.')[0]] = config.prodPath + json[name];
+      })
+      return dev;
+    }))
+    .pipe(gulp.dest('dist'))
+});
+
+gulp.task('build-html', function() {
+  return gulp.src('html/*.html')
+    .pipe(htmlreplace(require('./dist/manifest.json')))
+    .pipe(gulp.dest('example'));
+});
+
+
+gulp.task('dev', function() {
+  return runSequence(
+      'build-clean',
+      'build-css',
+      'manifest-dev',
+      'build-html'
+    );
+});
+
+gulp.task('prod', function() {
+  return runSequence(
+      'build-clean',
+      'build-css',
+      'manifest-prod',
+      'build-html'
+    );
+});
+
+gulp.task('default', ['dev', 'watch']);
+
+gulp.task('watch', function() {
+  gulp.watch(['css/*.css', 'html/*.html'], ['dev'])
+});

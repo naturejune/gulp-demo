@@ -10,13 +10,13 @@
   "license": "ISC",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "del": "^2.2.0",
+    "gulp-autoprefixer": "^3.1.0",
     "gulp-clean-css": "^2.0.6",
     "gulp-hash": "^3.0.6",
     "gulp-html-replace": "^1.5.5",
-    "gulp-rev": "^7.0.0",
+    "gulp-json-editor": "^2.2.1",
+    "gulp-rename": "^1.2.2",
     "run-sequence": "^1.1.5"
-  },
-  "dependencies": {
-    "del": "^2.2.0"
   }
 }
