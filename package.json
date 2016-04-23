@@ -1,0 +1,22 @@
+{
+  "name": "gulp-start",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.6",
+    "gulp-hash": "^3.0.6",
+    "gulp-html-replace": "^1.5.5",
+    "gulp-rev": "^7.0.0",
+    "run-sequence": "^1.1.5"
+  },
+  "dependencies": {
+    "del": "^2.2.0"
+  }
+}
